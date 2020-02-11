@@ -1,18 +1,19 @@
 #ifndef BOARD_H
 #define BOARD_H
-#include <draw.h>
-
+#include <QPainter>
+#include <iostream>
 class Board
 {
 public:
     Board(int dimension);
     void print_board();
-    int const &get_cell_value(int x, int y);
-    int const &get_cell_value(std::pair<int, int> coords);
-    void set_cell_value(int x, int y, QVector<QVector<int>> &board_matrix);
+    int get_cell_value(int x, int y);
+    int get_cell_value(std::pair<int, int> coords);
+    void set_cell_value(int x, int y);
     void set_cell_value(std::pair<int, int> coords);
-    QVector<QVector<int>> &get_board_matrix();
-    void set_board_matrix(QVector<QVector<int>> &board_matrix);
+    bool check_vertical();
+    bool check_horizontal();
+    const static int win_score = 5;
 private:
     QVector<QVector<int>> board_matrix;
 };

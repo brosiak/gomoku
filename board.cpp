@@ -1,17 +1,16 @@
 #include "board.h"
-#include "draw.h"
 
 Board::Board(int dimension)
 {
      QVector<QVector<int>> board_matrix(dimension, QVector<int>(dimension, 0));
      this->board_matrix = board_matrix;
      std::cout<<"Vector initialized"<<std::endl;
-     this->print_board();
+     print_board();
 }
 
 void Board::print_board()
 {
-    for(int i=0; i<this->board_matrix.size();i++)
+    for(int i=0; i<board_matrix.size();i++)
     {
         for(int j=0; j<board_matrix[i].size(); j++)
         {
@@ -20,31 +19,72 @@ void Board::print_board()
         std::cout<<std::endl;
     }
 }
-int const &Board::get_cell_value(int x, int y)
+int Board::get_cell_value(int x, int y)
 {
-    return this->board_matrix[x][y];
+    return board_matrix[x][y];
 }
 
-int const &Board::get_cell_value(std::pair<int, int> coords)
+int Board::get_cell_value(std::pair<int, int> coords)
 {
-    std::cout<<this->board_matrix[coords.first][coords.second]<<std::endl;
-    return this->board_matrix[coords.first][coords.second];
+    return board_matrix[coords.first][coords.second];
 }
-void Board:: set_cell_value(int x, int y, QVector<QVector<int>> &board_matrix)
+void Board:: set_cell_value(int x, int y)
 {
     board_matrix[x][y] = rand()%2 +1;
 }
 
 void Board::set_cell_value(std::pair<int, int> coords)
 {
-    this->board_matrix[coords.first][coords.second] = rand()%2 +1;
+    board_matrix[coords.first][coords.second] = rand()%2 +1;
 }
 
-QVector<QVector<int> > &Board::get_board_matrix()
+
+bool Board::check_horizontal()
 {
-    return this->board_matrix;
+    int count;
+    //int prev=0;
+    QVector<QVector<int>>::iterator row;
+    QVector<int>::iterator col;
+    QVector<int>::iterator prev;
+    print_board();
+    for(row = board_matrix.begin(); row !=board_matrix.end(); row++)
+    {
+        count=1;
+        prev = row->begin();
+        for(col = row->begin()+1; col!= row->end(); col++)
+        {
+
+            if(*prev == *col && *prev!=0 && *col!=0)
+            {
+                count++;
+                if(count==5)
+                {
+                    std::cout<<"Finish"<<std::endl;
+                    return true;
+                }
+            }
+            else
+            {
+                count = 1;
+            }
+            prev++;
+            //prev=*col;
+        }
+    }
 }
-void Board::set_board_matrix(QVector<QVector<int>> &board_matrix)
-{
-    this->board_matrix = board_matrix;
-}
+
+//bool Board::check_vertical()
+//{
+//    int count;
+//    //int prev=0;
+//    QVector<QVector<int>>::iterator row;
+//    QVector<int>::iterator col;
+//    QVector<int>::iterator prev;
+//    for(col = board_matrix.begin()->begin(); col!= board_matrix.end()->end();col++)
+//    {
+//        for(row = board_matrix.begin()+1; row !=board_matrix.end(); row++)
+//        {
+//           prev = board_matrix.begin()
+//        }
+//    }
+//}
