@@ -11,63 +11,63 @@ Gui::~Gui()
 {
 }
 
-void Gui::init_board(QPainter *painter)
+void Gui::initBoard(QPainter *painter)
 {
-    painter->setWindow(0, 0, board_size_px, board_size_px);
+    painter->setWindow(0, 0, boardSizePx, boardSizePx);
     for(int i=0; i<dimension;i++)
     {
         for(int j=0; j<dimension;j++)
         {
-            painter->drawRect(i*cell_size_px, j*cell_size_px, cell_size_px, cell_size_px);
+            painter->drawRect(i*cellSizePx, j*cellSizePx, cellSizePx, cellSizePx);
         }
     }
 }
 
-void Gui::draw_balls(QPainter *painter)
+void Gui::drawBalls(QPainter *painter)
 {
     for(int i=0; i<dimension; i++)
     {
         for(int j=0; j<dimension;j++)
         {
-            if (board->get_cell_value(i,j) == 0)
+            if (board->getCellValue(i,j) == 0)
             {
                 continue;
             }
-            else if(board->get_cell_value(i,j) == 1)
+            else if(board->getCellValue(i,j) == 1)
             {
                 painter->setBrush(Qt::red);
-                painter->drawEllipse(j*cell_size_px + border/2, i*cell_size_px + border/2,
-                                     cell_size_px - border, cell_size_px - border);
+                painter->drawEllipse(j*cellSizePx + border/2, i*cellSizePx + border/2,
+                                     cellSizePx - border, cellSizePx - border);
             }
-            else if(board->get_cell_value(i,j) == 2)
+            else if(board->getCellValue(i,j) == 2)
             {
                 painter->setBrush(Qt::blue);
-                painter->drawEllipse(j*cell_size_px + border/2, i*cell_size_px + border/2,
-                                     cell_size_px - border, cell_size_px - border);
+                painter->drawEllipse(j*cellSizePx + border/2, i*cellSizePx + border/2,
+                                     cellSizePx - border, cellSizePx - border);
             }
         }
     }
 }
 
-std::pair<int, int> Gui::get_coords(QPoint point)
+std::pair<int, int> Gui::getCoords(QPoint point)
 {
     int x = point.rx();
     int y = point.ry();
-    if (x % cell_size_px == 0)
+    if (x % cellSizePx == 0)
     {
-        x /= cell_size_px -1;
+        x /= cellSizePx -1;
     }
     else
     {
-        x = (x - x % cell_size_px) / cell_size_px;
+        x = (x - x % cellSizePx) / cellSizePx;
     }
-    if (y % cell_size_px == 0)
+    if (y % cellSizePx == 0)
     {
-        y /= cell_size_px - 1;
+        y /= cellSizePx - 1;
     }
     else
     {
-        y = (y - y % cell_size_px) / cell_size_px;
+        y = (y - y % cellSizePx) / cellSizePx;
     }
     std::cout<<x<<" "<<y<<std::endl;
     return std::make_pair(y, x);
@@ -76,10 +76,10 @@ std::pair<int, int> Gui::get_coords(QPoint point)
 void Gui::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    setMaximumWidth(board_size_px);
-    setMaximumHeight(board_size_px);
-    init_board(&painter);
-    draw_balls(&painter);
+    setMaximumWidth(boardSizePx);
+    setMaximumHeight(boardSizePx);
+    initBoard(&painter);
+    drawBalls(&painter);
 }
 
 
@@ -88,14 +88,16 @@ void Gui::mousePressEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton)
     {
         last_point = event->pos();
-        is_clicked = true;
+        isClicked = true;
         //qDebug() << last_point;
-        std::pair<int, int> coords = get_coords(last_point);
-        if(board->get_cell_value(coords) == 0)
+        std::pair<int, int> coords = getCoords(last_point);
+        if(board->getCellValue(coords) == 0)
         {
-            board->set_cell_value(coords);
+            board->setCellValue(coords);
             QWidget::update();
-            board->check_vertical();
+            board->checkHorizontal();
+           // board->checkVertical();
+           // board->checkDiagonalBR();
         }
 
         //std::cout << "coords: "<< coords.first << " "<< coords.second<<std::endl;
