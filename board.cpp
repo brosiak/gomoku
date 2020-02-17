@@ -28,12 +28,12 @@ int Board::getCellValue(std::pair<int, int> coords)
 }
 void Board:: setCellValue(int x, int y)
 {
-    board_matrix[x][y] = rand()%2 +1;
+    board_matrix[x][y] = 1;//rand()%2 +1;
 }
 
 void Board::setCellValue(std::pair<int, int> coords)
 {
-    board_matrix[coords.first][coords.second] = rand()%2 +1;
+    board_matrix[coords.first][coords.second] = 1;//rand()%2 +1;
 }
 
 bool Board::checkWinScore(int first, int second, int &score)
@@ -45,11 +45,13 @@ bool Board::checkWinScore(int first, int second, int &score)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
     }
+    else
+    {
+            score = START_SCORE;
+            return false;
+    }
+    return false;
 }
 
 bool Board::checkHorizontal()
@@ -58,26 +60,16 @@ bool Board::checkHorizontal()
     QVector<QVector<int>>::iterator row;
     QVector<int>::iterator col;
     QVector<int>::iterator prev;
-    //print_board();
     for(row = board_matrix.begin(); row !=board_matrix.end(); row++)
     {
         count_score=START_SCORE;
         prev = row->begin();
         for(col = row->begin()+1; col!= row->end(); col++)
         {
-
-            if(*prev == *col && *prev!=0 && *col!=0)
+            if(checkWinScore(*prev, *col, count_score))
             {
-                count_score++;
-                if(count_score==WIN_SCORE)
-                {
-                    std::cout<<"Finish"<<std::endl;
-                    return true;
-                }
-            }
-            else
-            {
-                count_score = START_SCORE;
+                std::cout<<"Finish"<<std::endl;
+                return true;
             }
             prev++;
         }
@@ -87,23 +79,12 @@ bool Board::checkHorizontal()
 
 bool Board::checkVertical()
 {
-//    int count;
-//    int col=0;
-//    int prev=0;
-//    for(int i=0; i<board_matrix.size();i++)
-//    {
-//        count = 1;
-//        for(auto row : board_matrix)
-//        {
-
-//        }
-//    }
     int count_score;
     int pos;
     QVector<QVector<int>>::iterator row;
     QVector<int>::iterator prev;
     QVector<int>::iterator sec;
-    for(int col=0; col<board_matrix.size()-1;col++)
+    for(int col=0; col < board_matrix.size() - 1;col++)
     {
         count_score = START_SCORE;
         pos=0;
@@ -111,19 +92,9 @@ bool Board::checkVertical()
         {
             prev = (board_matrix.begin()+pos)->begin()+col;
             sec = row->begin()+col;
-            if(*prev == *sec && *prev!=0 && *sec!=0)
+            if(checkWinScore(*prev, *sec, count_score))
             {
-                count_score++;
-                std::cout<<count_score<<std::endl;
-                if(count_score==WIN_SCORE)
-                {
-                    std::cout<<"finish 2"<<std::endl;
-                    return true;
-                }
-            }
-            else
-            {
-                count_score=START_SCORE;
+                return true;
             }
             pos++;
         }
@@ -134,50 +105,88 @@ bool Board::checkVertical()
 /*Check diagonal from top left to bottom right*/
 bool Board::checkDiagonalBR()
 {
-    int col = 0;
+    int col;
+    int shift_col=0;
     int pos;
     int count_score;
     QVector<QVector<int>>::iterator row;
     QVector<int>::iterator prev;
     QVector<int>::iterator sec;
-    for(int i = board_matrix.size() - WIN_SCORE; i > 0; i--)
+    for(int i = board_matrix.size() - WIN_SCORE; i >= 0; i--)
     {
         count_score = 1;
-        pos=0;
-        col=0;
+        pos = 0;
+        col = 0;
         for(row = board_matrix.begin()+i+1; row !=board_matrix.end(); row++)
         {
             prev = (board_matrix.begin()+i+pos)->begin()+col;
             sec = row->begin()+col+1;
-            if(*prev == *sec && *prev!=0 && *sec!=0)
+            if(checkWinScore(*prev, *sec, count_score))
             {
-                count_score++;
-                std::cout<<count_score<<std::endl;
-                if(count_score==WIN_SCORE)
-                {
-                    std::cout<<"finish 3"<<std::endl;
-                    return true;
-                }
-            }
-            else
-            {
-                count_score=START_SCORE;
+                return true;
             }
             pos++;
             col++;
         }
+        count_score = 1;
         pos=0;
         col=0;
-        for(row = board_matrix.begin(); row != board_matrix.end()-i; row++)
+        for(row = board_matrix.begin() + 1; row != board_matrix.end() - shift_col; row++)
         {
-            prev = (board_matrix.begin()+pos)->begin()+col;
-            sec = row->begin()+col+1;
+            prev = (board_matrix.begin() + pos)->begin() + col + shift_col;
+            sec = row->begin() + col + shift_col + 1;
+            if(checkWinScore(*prev, *sec, count_score))
+            {
+                return true;
+            }
+            pos++;
+            col++;
         }
+        shift_col++;
     }
 
 }
 /*Check diagonal from top right to bottom left*/
 bool Board::checkDiagonalBL()
 {
-    return true;
+    int col;
+    int shift_col = 0;
+    int pos;
+    int count_score;
+    QVector<QVector<int>>::iterator row;
+    QVector<int>::reverse_iterator prev;
+    QVector<int>::reverse_iterator sec;
+    for(int i = board_matrix.size() - WIN_SCORE; i >= 0; i--)
+    {
+        count_score = 1;
+        pos = 0;
+        col = 0;
+        for(row = board_matrix.begin()+i+1; row !=board_matrix.end(); row++)
+        {
+            prev = (board_matrix.begin()+i+pos)->rbegin() + col;
+            sec = row->rbegin() + col + 1;
+            if(checkWinScore(*prev, *sec, count_score))
+            {
+                return true;
+            }
+            pos++;
+            col++;
+        }
+        count_score = 1;
+        pos=0;
+        col=0;
+        for(row = board_matrix.begin() + 1; row != board_matrix.end() - shift_col; row++)
+        {
+            prev = (board_matrix.begin() + pos)->rbegin() + col + shift_col;
+            sec = row->rbegin() + col + shift_col + 1;
+            if(checkWinScore(*prev, *sec, count_score))
+            {
+                return true;
+            }
+            pos++;
+            col++;
+        }
+        shift_col++;
+    }
+
 }

@@ -69,7 +69,6 @@ std::pair<int, int> Gui::getCoords(QPoint point)
     {
         y = (y - y % cellSizePx) / cellSizePx;
     }
-    std::cout<<x<<" "<<y<<std::endl;
     return std::make_pair(y, x);
 }
 
@@ -89,15 +88,15 @@ void Gui::mousePressEvent(QMouseEvent *event)
     {
         last_point = event->pos();
         isClicked = true;
-        //qDebug() << last_point;
         std::pair<int, int> coords = getCoords(last_point);
         if(board->getCellValue(coords) == 0)
         {
             board->setCellValue(coords);
             QWidget::update();
             board->checkHorizontal();
-           // board->checkVertical();
-           // board->checkDiagonalBR();
+            board->checkVertical();
+            board->checkDiagonalBR();
+            board->checkDiagonalBL();
         }
 
         //std::cout << "coords: "<< coords.first << " "<< coords.second<<std::endl;
