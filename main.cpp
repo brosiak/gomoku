@@ -1,11 +1,11 @@
-#include "gui.h"
+#include "game.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Gui w;
-    w.showMaximized();
+    Game game;
+    game.gui->showMaximized();
     return a.exec();
 }

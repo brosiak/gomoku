@@ -21,6 +21,7 @@ public:
     void drawBalls(QPainter *painter);
     int getCellValue(int x, int y);
     int getCellValue(std::pair<int, int> coords);
+    bool checkIfExceeds(QPoint point);
     std::pair<int, int> getCoords(QPoint point);
     bool isClicked;
     Board *board;
@@ -29,7 +30,10 @@ private:
     static constexpr int border = 6;
     static constexpr int dimension = 15;
     static constexpr int cellSizePx = 64;
+    static constexpr int menuPx = 250;
     static constexpr int boardSizePx = dimension * cellSizePx;
+    static constexpr int FIRST_PLAYER = 1;
+    static constexpr int SECOND_PLAYER = -1;
     QPoint last_point;
     void mousePressEvent(QMouseEvent *event)override;
 

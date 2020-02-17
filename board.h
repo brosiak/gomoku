@@ -9,12 +9,13 @@ public:
     void printBoard();
     int getCellValue(int x, int y);
     int getCellValue(std::pair<int, int> coords);
-    void setCellValue(int x, int y);
-    void setCellValue(std::pair<int, int> coords);
+    void setCellValue(int x, int y, const int PLAYER);
+    void setCellValue(std::pair<int, int> coords, const int PLAYER);
     bool checkVertical();
     bool checkHorizontal();
     bool checkDiagonalBR();
     bool checkDiagonalBL();
+    bool checkWin();
     bool checkWinScore(int first, int second, int &score);
     static constexpr int WIN_SCORE = 5;
     static constexpr int START_SCORE = 1;

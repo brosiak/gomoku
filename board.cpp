@@ -26,14 +26,14 @@ int Board::getCellValue(std::pair<int, int> coords)
 {
     return board_matrix[coords.first][coords.second];
 }
-void Board:: setCellValue(int x, int y)
+void Board:: setCellValue(int x, int y, const int PLAYER)
 {
-    board_matrix[x][y] = 1;//rand()%2 +1;
+    board_matrix[x][y] = PLAYER;//rand()%2 +1;
 }
 
-void Board::setCellValue(std::pair<int, int> coords)
+void Board::setCellValue(std::pair<int, int> coords, const int PLAYER)
 {
-    board_matrix[coords.first][coords.second] = 1;//rand()%2 +1;
+    board_matrix[coords.first][coords.second] = PLAYER;//rand()%2 +1;
 }
 
 bool Board::checkWinScore(int first, int second, int &score)
@@ -88,7 +88,7 @@ bool Board::checkVertical()
     {
         count_score = START_SCORE;
         pos=0;
-        for(row = board_matrix.begin()+1; row !=board_matrix.end(); row++)
+        for(row = board_matrix.begin() + 1; row != board_matrix.end(); row++)
         {
             prev = (board_matrix.begin()+pos)->begin()+col;
             sec = row->begin()+col;
@@ -117,9 +117,9 @@ bool Board::checkDiagonalBR()
         count_score = 1;
         pos = 0;
         col = 0;
-        for(row = board_matrix.begin()+i+1; row !=board_matrix.end(); row++)
+        for(row = board_matrix.begin() + i + 1; row !=board_matrix.end(); row++)
         {
-            prev = (board_matrix.begin()+i+pos)->begin()+col;
+            prev = (board_matrix.begin() + i + pos)->begin() + col;
             sec = row->begin()+col+1;
             if(checkWinScore(*prev, *sec, count_score))
             {
@@ -144,7 +144,7 @@ bool Board::checkDiagonalBR()
         }
         shift_col++;
     }
-
+    return false;
 }
 /*Check diagonal from top right to bottom left*/
 bool Board::checkDiagonalBL()
@@ -188,5 +188,17 @@ bool Board::checkDiagonalBL()
         }
         shift_col++;
     }
+    return false;
+}
 
+bool Board::checkWin()
+{
+    if(checkVertical() || checkHorizontal() || checkDiagonalBL() || checkDiagonalBR())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

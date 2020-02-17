@@ -2,6 +2,8 @@
 #include <QMouseEvent>
 #include <QDebug>
 #include <utility>
+#include <QMessageBox>
+#include <QApplication>
 Gui::Gui(QWidget *parent)
     : QMainWindow(parent), board(new Board (dimension))
 {
@@ -13,13 +15,25 @@ Gui::~Gui()
 
 void Gui::initBoard(QPainter *painter)
 {
-    painter->setWindow(0, 0, boardSizePx, boardSizePx);
+    painter->setWindow(0, 0, boardSizePx + menuPx, boardSizePx);
     for(int i=0; i<dimension;i++)
     {
         for(int j=0; j<dimension;j++)
         {
             painter->drawRect(i*cellSizePx, j*cellSizePx, cellSizePx, cellSizePx);
         }
+    }
+}
+
+bool Gui::checkIfExceeds(QPoint point)
+{
+    if(point.rx() >= boardSizePx || point.ry() >= boardSizePx)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
     }
 }
 
@@ -75,7 +89,7 @@ std::pair<int, int> Gui::getCoords(QPoint point)
 void Gui::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    setMaximumWidth(boardSizePx);
+    setMaximumWidth(boardSizePx + menuPx);
     setMaximumHeight(boardSizePx);
     initBoard(&painter);
     drawBalls(&painter);
@@ -88,16 +102,25 @@ void Gui::mousePressEvent(QMouseEvent *event)
     {
         last_point = event->pos();
         isClicked = true;
-        std::pair<int, int> coords = getCoords(last_point);
-        if(board->getCellValue(coords) == 0)
+        //std::pair<int, int> coords = getCoords(last_point);
+        if (checkIfExceeds(last_point))
         {
-            board->setCellValue(coords);
-            QWidget::update();
-            board->checkHorizontal();
-            board->checkVertical();
-            board->checkDiagonalBR();
-            board->checkDiagonalBL();
+            std::pair<int, int> coords = getCoords(last_point);
+            if(board->getCellValue(coords) == 0)
+            {
+                board->setCellValue(coords, 1);
+                QWidget::update();
+                if(board->checkWin())
+                {
+                    QMessageBox::information(
+                        this,
+                        tr("Gomoku"),
+                        tr("You won") );
+                    QApplication::quit();
+                }
+            }
         }
+
 
         //std::cout << "coords: "<< coords.first << " "<< coords.second<<std::endl;
     }
