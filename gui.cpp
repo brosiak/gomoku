@@ -5,25 +5,35 @@
 #include <QMessageBox>
 #include <QApplication>
 Gui::Gui(QWidget *parent)
-    : QMainWindow(parent), board(new Board (dimension))
+    : QMainWindow(parent), board(new Board (dimension)), actualPlayer(firstPlayer)
 {
+    initWindow();
 }
 
 Gui::~Gui()
 {
 }
 
-void Gui::initBoard(QPainter *painter)
+void Gui::initWindow()
 {
-    painter->setWindow(0, 0, boardSizePx + menuPx, boardSizePx);
-    for(int i=0; i<dimension;i++)
+    setMaximumWidth(boardSizePx + menuPx);
+    setMaximumHeight(boardSizePx);
+}
+
+void Gui::drawBoard()
+{
+    QPainter painter(this);
+    painter.setWindow(0, 0, boardSizePx + menuPx, boardSizePx);
+    for(int x=0; x<dimension;x++)
     {
-        for(int j=0; j<dimension;j++)
+        for(int y=0; y<dimension;y++)
         {
-            painter->drawRect(i*cellSizePx, j*cellSizePx, cellSizePx, cellSizePx);
+            painter.drawRect(x*cellSizePx, y*cellSizePx, cellSizePx, cellSizePx);
         }
     }
 }
+
+
 
 bool Gui::checkIfExceeds(QPoint point)
 {
@@ -37,27 +47,34 @@ bool Gui::checkIfExceeds(QPoint point)
     }
 }
 
-void Gui::drawBalls(QPainter *painter)
+void Gui::drawBall(const int x, const int y)
 {
-    for(int i=0; i<dimension; i++)
+    QPainter painter(this);
+    if(board->getCellValue(x,y) == firstPlayer)
     {
-        for(int j=0; j<dimension;j++)
+        painter.setBrush(Qt::red);
+    }
+    else if(board->getCellValue(x,y) == secondPlayer)
+    {
+        painter.setBrush(Qt::blue);
+    }
+    painter.drawEllipse(y*cellSizePx + border/2, x*cellSizePx + border/2,
+                         cellSizePx - border, cellSizePx - border);
+}
+
+void Gui::drawBalls()
+{
+    for(int x=0; x<dimension; x++)
+    {
+        for(int y=0; y<dimension;y++)
         {
-            if (board->getCellValue(i,j) == 0)
+            if (board->getCellValue(x,y) == emptyCell)
             {
                 continue;
             }
-            else if(board->getCellValue(i,j) == 1)
+            else
             {
-                painter->setBrush(Qt::red);
-                painter->drawEllipse(j*cellSizePx + border/2, i*cellSizePx + border/2,
-                                     cellSizePx - border, cellSizePx - border);
-            }
-            else if(board->getCellValue(i,j) == 2)
-            {
-                painter->setBrush(Qt::blue);
-                painter->drawEllipse(j*cellSizePx + border/2, i*cellSizePx + border/2,
-                                     cellSizePx - border, cellSizePx - border);
+                drawBall(x, y);
             }
         }
     }
@@ -86,13 +103,22 @@ std::pair<int, int> Gui::getCoords(QPoint point)
     return std::make_pair(y, x);
 }
 
+void Gui::changePlayer()
+{
+    if(actualPlayer == firstPlayer)
+    {
+        actualPlayer = secondPlayer;
+    }
+    else if(actualPlayer == secondPlayer)
+    {
+        actualPlayer = firstPlayer;
+    }
+}
+
 void Gui::paintEvent(QPaintEvent *event)
 {
-    QPainter painter(this);
-    setMaximumWidth(boardSizePx + menuPx);
-    setMaximumHeight(boardSizePx);
-    initBoard(&painter);
-    drawBalls(&painter);
+    drawBoard();
+    drawBalls();
 }
 
 
@@ -101,28 +127,29 @@ void Gui::mousePressEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton)
     {
         last_point = event->pos();
-        isClicked = true;
-        //std::pair<int, int> coords = getCoords(last_point);
         if (checkIfExceeds(last_point))
         {
             std::pair<int, int> coords = getCoords(last_point);
-            if(board->getCellValue(coords) == 0)
+            if(board->getCellValue(coords) == emptyCell)
             {
-                board->setCellValue(coords, 1);
+                board->setCellValue(coords, actualPlayer);
+
                 QWidget::update();
                 if(board->checkWin())
                 {
                     QMessageBox::information(
                         this,
                         tr("Gomoku"),
-                        tr("You won") );
+                        QString("Player %1 won!" )
+                           .arg(actualPlayer) );
                     QApplication::quit();
+                }
+                else
+                {
+                    changePlayer();
                 }
             }
         }
-
-
-        //std::cout << "coords: "<< coords.first << " "<< coords.second<<std::endl;
     }
 }
 

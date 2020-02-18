@@ -6,8 +6,9 @@ class Game
 {
 public:
     Game();
-    Gui *gui;
+
 private:
+    Gui *gui;
     int whoseTurn;
     int score;
     void changeTurn();

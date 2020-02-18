@@ -45,6 +45,10 @@ bool Board::checkWinScore(int first, int second, int &score)
         {
             return true;
         }
+        else
+        {
+            return false;
+        }
     }
     else
     {
@@ -68,6 +72,17 @@ bool Board::checkHorizontal()
         {
             if(checkWinScore(*prev, *col, count_score))
             {
+                if(col+1 != row->end())
+                {
+                    if(checkWinScore(*col, *(col+1), count_score))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
                 std::cout<<"Finish"<<std::endl;
                 return true;
             }
@@ -84,7 +99,7 @@ bool Board::checkVertical()
     QVector<QVector<int>>::iterator row;
     QVector<int>::iterator prev;
     QVector<int>::iterator sec;
-    for(int col=0; col < board_matrix.size() - 1;col++)
+    for(int col=0; col < board_matrix.size() ;col++)
     {
         count_score = START_SCORE;
         pos=0;
