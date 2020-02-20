@@ -29,7 +29,7 @@ private:
     void changePlayer();
     std::pair<int, int> getCoords(QPoint point);
     bool isClicked;
-    Board *board;
+    Board board;
     int actualPlayer;
     static constexpr int border = 6;
     static constexpr int dimension = 15;

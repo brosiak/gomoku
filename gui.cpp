@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QApplication>
 Gui::Gui(QWidget *parent)
-    : QMainWindow(parent), board(new Board (dimension)), actualPlayer(firstPlayer)
+    : QMainWindow(parent), board(dimension), actualPlayer(firstPlayer)
 {
     initWindow();
 }
@@ -18,6 +18,8 @@ void Gui::initWindow()
 {
     setMaximumWidth(boardSizePx + menuPx);
     setMaximumHeight(boardSizePx);
+    setMinimumWidth(boardSizePx + menuPx);
+    setMinimumHeight(boardSizePx);
 }
 
 void Gui::drawBoard()
@@ -50,11 +52,11 @@ bool Gui::checkIfExceeds(QPoint point)
 void Gui::drawBall(const int x, const int y)
 {
     QPainter painter(this);
-    if(board->getCellValue(x,y) == firstPlayer)
+    if(board.getCellValue(x,y) == firstPlayer)
     {
         painter.setBrush(Qt::red);
     }
-    else if(board->getCellValue(x,y) == secondPlayer)
+    else if(board.getCellValue(x,y) == secondPlayer)
     {
         painter.setBrush(Qt::blue);
     }
@@ -68,7 +70,7 @@ void Gui::drawBalls()
     {
         for(int y=0; y<dimension;y++)
         {
-            if (board->getCellValue(x,y) == emptyCell)
+            if (board.getCellValue(x,y) == emptyCell)
             {
                 continue;
             }
@@ -130,12 +132,13 @@ void Gui::mousePressEvent(QMouseEvent *event)
         if (checkIfExceeds(last_point))
         {
             std::pair<int, int> coords = getCoords(last_point);
-            if(board->getCellValue(coords) == emptyCell)
+            if(board.getCellValue(coords) == emptyCell)
             {
-                board->setCellValue(coords, actualPlayer);
+                board.setCellValue(coords, actualPlayer);
 
                 QWidget::update();
-                if(board->checkWin())
+
+                if(board.checkWin())
                 {
                     QMessageBox::information(
                         this,

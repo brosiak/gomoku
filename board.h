@@ -16,11 +16,13 @@ public:
     bool checkDiagonalBR();
     bool checkDiagonalBL();
     bool checkWin();
+
     bool checkWinScore(int first, int second, int &score);
     static constexpr int WIN_SCORE = 5;
     static constexpr int START_SCORE = 1;
 private:
     QVector<QVector<int>> board_matrix;
+    bool isWinSeq;
 };
 
 #endif // BOARD_H

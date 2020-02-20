@@ -1,6 +1,8 @@
 #include "board.h"
 
-Board::Board(int dimension) :  board_matrix(dimension, QVector<int>(dimension, 0))
+Board::Board(int dimension) :
+    board_matrix(dimension, QVector<int>(dimension, 0)),
+    isWinSeq(false)
 {
      std::cout<<"board initialized"<<std::endl;
      printBoard();
@@ -43,17 +45,24 @@ bool Board::checkWinScore(int first, int second, int &score)
         score++;
         if(score == WIN_SCORE)
         {
+            isWinSeq = true;
             return true;
         }
-        else
+        else if(score>WIN_SCORE)
         {
+            score = START_SCORE;
+            isWinSeq = false;
             return false;
         }
     }
+    else if(isWinSeq==true)
+    {
+            return true;
+    }
     else
     {
-            score = START_SCORE;
-            return false;
+        score = START_SCORE;
+        return false;
     }
     return false;
 }
@@ -76,15 +85,19 @@ bool Board::checkHorizontal()
                 {
                     if(checkWinScore(*col, *(col+1), count_score))
                     {
-                        return false;
+                        return true;
                     }
                     else
                     {
-                        return true;
+                        prev++;
+                        continue;
                     }
                 }
-                std::cout<<"Finish"<<std::endl;
-                return true;
+                else
+                {
+                    return true;
+                }
+
             }
             prev++;
         }
@@ -208,7 +221,7 @@ bool Board::checkDiagonalBL()
 
 bool Board::checkWin()
 {
-    if(checkVertical() || checkHorizontal() || checkDiagonalBL() || checkDiagonalBR())
+    if(checkHorizontal())//if(checkVertical() || checkHorizontal() || checkDiagonalBL() || checkDiagonalBR())
     {
         return true;
     }
