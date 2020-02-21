@@ -4,8 +4,9 @@
 #include <utility>
 #include <QMessageBox>
 #include <QApplication>
-Gui::Gui(QWidget *parent)
-    : QMainWindow(parent), board(dimension), actualPlayer(firstPlayer)
+Gui::Gui(Board &board_ref,QWidget *parent )
+    : QMainWindow(parent),
+      board(board_ref)
 {
     initWindow();
 }
@@ -37,17 +38,6 @@ void Gui::drawBoard()
 
 
 
-bool Gui::checkIfExceeds(QPoint point)
-{
-    if(point.rx() >= boardSizePx || point.ry() >= boardSizePx)
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
 
 void Gui::drawBall(const int x, const int y)
 {
@@ -82,40 +72,7 @@ void Gui::drawBalls()
     }
 }
 
-std::pair<int, int> Gui::getCoords(QPoint point)
-{
-    int x = point.rx();
-    int y = point.ry();
-    if (x % cellSizePx == 0)
-    {
-        x /= cellSizePx -1;
-    }
-    else
-    {
-        x = (x - x % cellSizePx) / cellSizePx;
-    }
-    if (y % cellSizePx == 0)
-    {
-        y /= cellSizePx - 1;
-    }
-    else
-    {
-        y = (y - y % cellSizePx) / cellSizePx;
-    }
-    return std::make_pair(y, x);
-}
 
-void Gui::changePlayer()
-{
-    if(actualPlayer == firstPlayer)
-    {
-        actualPlayer = secondPlayer;
-    }
-    else if(actualPlayer == secondPlayer)
-    {
-        actualPlayer = firstPlayer;
-    }
-}
 
 void Gui::paintEvent(QPaintEvent *event)
 {
@@ -124,35 +81,5 @@ void Gui::paintEvent(QPaintEvent *event)
 }
 
 
-void Gui::mousePressEvent(QMouseEvent *event)
-{
-    if(event->button() == Qt::LeftButton)
-    {
-        last_point = event->pos();
-        if (checkIfExceeds(last_point))
-        {
-            std::pair<int, int> coords = getCoords(last_point);
-            if(board.getCellValue(coords) == emptyCell)
-            {
-                board.setCellValue(coords, actualPlayer);
 
-                QWidget::update();
-
-                if(board.checkWin())
-                {
-                    QMessageBox::information(
-                        this,
-                        tr("Gomoku"),
-                        QString("Player %1 won!" )
-                           .arg(actualPlayer) );
-                    QApplication::quit();
-                }
-                else
-                {
-                    changePlayer();
-                }
-            }
-        }
-    }
-}
 

@@ -3,17 +3,21 @@
 
 #include <QMainWindow>
 #include <QPainter>
-#include "board.h"
 #include <iostream>
-
-
+#include <AppConstants.h>
+using namespace appConstants;
+class Board
+{
+ public:
+    int getCellValue(int x, int y);
+};
 
 class Gui : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    Gui(QWidget *parent = nullptr);
+    Gui(Board &board, QWidget *parent = nullptr);
     ~Gui();
 
 
@@ -23,24 +27,9 @@ private:
     void drawBoard();
     void drawBall(const int x, const int y);
     void drawBalls();
-    int getCellValue(int x, int y);
-    int getCellValue(std::pair<int, int> coords);
-    bool checkIfExceeds(QPoint point);
-    void changePlayer();
-    std::pair<int, int> getCoords(QPoint point);
-    bool isClicked;
-    Board board;
-    int actualPlayer;
-    static constexpr int border = 6;
-    static constexpr int dimension = 15;
-    static constexpr int cellSizePx = 64;
-    static constexpr int menuPx = 250;
-    static constexpr int boardSizePx = dimension * cellSizePx;
-    static constexpr int firstPlayer = 1;
-    static constexpr int secondPlayer = 2;
-    static constexpr int emptyCell = 0;
-    QPoint last_point;
-    void mousePressEvent(QMouseEvent *event)override;
+    Board &board;
+
+
 
 
 };

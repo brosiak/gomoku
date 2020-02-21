@@ -18,11 +18,11 @@ public:
     bool checkWin();
 
     bool checkWinScore(int first, int second, int &score);
-    static constexpr int WIN_SCORE = 5;
-    static constexpr int START_SCORE = 1;
 private:
     QVector<QVector<int>> board_matrix;
     bool isWinSeq;
+    static constexpr int WIN_SCORE = 5;
+    static constexpr int START_SCORE = 1;
 };
 
 #endif // BOARD_H
