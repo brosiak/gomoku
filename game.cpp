@@ -1,5 +1,6 @@
 #include "game.h"
-Game::Game(Boardd &board_ref, QWidget *parent) :
+#include "board.h"
+Game::Game(Board *board_ref, QWidget *parent) :
     QWidget(parent),
     board(board_ref)
 
@@ -63,13 +64,13 @@ void Game::mousePressEvent(QMouseEvent *event)
         if (checkIfExceeds(last_point))
         {
             std::pair<int, int> coords = getCoords(last_point);
-            if(board.getCellValue(coords) == emptyCell)
+            if(board->getCellValue(coords) == emptyCell)
             {
-                board.setCellValue(coords, actualPlayer);
+                board->setCellValue(coords, actualPlayer);
 
                 QWidget::update();
 
-                if(board.checkWin())
+                if(board->checkWin())
                 {
                     QMessageBox::information(
                         this,

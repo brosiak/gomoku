@@ -6,18 +6,15 @@
 #include <iostream>
 #include <AppConstants.h>
 using namespace appConstants;
-class Board
-{
- public:
-    int getCellValue(int x, int y);
-};
+class Board;
+
 
 class Gui : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    Gui(Board &board, QWidget *parent = nullptr);
+    Gui(Board *board, QWidget *parent = nullptr);
     ~Gui();
 
 
@@ -27,7 +24,7 @@ private:
     void drawBoard();
     void drawBall(const int x, const int y);
     void drawBalls();
-    Board &board;
+    Board *board;
 
 
 

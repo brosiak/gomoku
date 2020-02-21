@@ -1,10 +1,11 @@
 #include "gui.h"
+#include "board.h"
 #include <QMouseEvent>
 #include <QDebug>
 #include <utility>
 #include <QMessageBox>
 #include <QApplication>
-Gui::Gui(Board &board_ref,QWidget *parent )
+Gui::Gui(Board *board_ref,QWidget *parent )
     : QMainWindow(parent),
       board(board_ref)
 {
@@ -42,11 +43,11 @@ void Gui::drawBoard()
 void Gui::drawBall(const int x, const int y)
 {
     QPainter painter(this);
-    if(board.getCellValue(x,y) == firstPlayer)
+    if(board->getCellValue(x,y) == firstPlayer)
     {
         painter.setBrush(Qt::red);
     }
-    else if(board.getCellValue(x,y) == secondPlayer)
+    else if(board->getCellValue(x,y) == secondPlayer)
     {
         painter.setBrush(Qt::blue);
     }
@@ -60,7 +61,7 @@ void Gui::drawBalls()
     {
         for(int y=0; y<dimension;y++)
         {
-            if (board.getCellValue(x,y) == emptyCell)
+            if (board->getCellValue(x,y) == emptyCell)
             {
                 continue;
             }

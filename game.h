@@ -7,18 +7,14 @@
 #include <AppConstants.h>
 using namespace appConstants;
 
-class Board
-{
- public:
-    int getCellValue(std::pair<int,int> coords);
-    void setCellValue(std::pair<int,int> coords,const int PLAYER);
-    bool checkWin();
-};
+class Board;
+
 
 class Game : public QWidget
 {
+    Q_OBJECT
 public:
-    Game(Board &board_ref, QWidget *parent = nullptr );
+    Game(Board *board, QWidget *parent = nullptr );
     ~Game();
 
 private:
@@ -32,7 +28,7 @@ private:
     bool checkIfExceeds(QPoint point);
     void changePlayer();
     std::pair<int, int> getCoords(QPoint point);
-    Board &board;
+    Board *board;
 };
 
 #endif // GAME_H
