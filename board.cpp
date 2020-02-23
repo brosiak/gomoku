@@ -122,7 +122,23 @@ bool Board::checkVertical()
             sec = row->begin()+col;
             if(checkWinScore(*prev, *sec, count_score))
             {
-                return true;
+                if(row + 1 != board_matrix.end())
+                {
+                    if(checkWinScore(*sec, *((row+1)->begin()+col), count_score))
+                    {
+                            return true;
+                    }
+                    else
+                    {
+                        pos++;
+                        continue;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+
             }
             pos++;
         }
@@ -221,7 +237,7 @@ bool Board::checkDiagonalBL()
 
 bool Board::checkWin()
 {
-    if(checkHorizontal())//if(checkVertical() || checkHorizontal() || checkDiagonalBL() || checkDiagonalBR())
+    if(checkHorizontal() || checkVertical())// || checkHorizontal() || checkDiagonalBL() || checkDiagonalBR())
     {
         return true;
     }

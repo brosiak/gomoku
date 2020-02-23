@@ -20,6 +20,7 @@ void Gui::initWindow()
     setMaximumHeight(boardSizePx);
     setMinimumWidth(boardSizePx + menuPx);
     setMinimumHeight(boardSizePx);
+    this->setStyleSheet("QMainWindow {background: '#632919';}");
 }
 
 void Gui::drawBoard()
@@ -54,11 +55,11 @@ void Gui::drawBall(const int x, const int y)
     QPainter painter(this);
     if(board.getCellValue(x,y) == firstPlayer)
     {
-        painter.setBrush(Qt::red);
+        painter.setBrush(Qt::black);
     }
     else if(board.getCellValue(x,y) == secondPlayer)
     {
-        painter.setBrush(Qt::blue);
+        painter.setBrush(Qt::white);
     }
     painter.drawEllipse(y*cellSizePx + border/2, x*cellSizePx + border/2,
                          cellSizePx - border, cellSizePx - border);
