@@ -5,9 +5,14 @@
 #include <QMessageBox>
 #include <QApplication>
 Gui::Gui(QWidget *parent)
-    : QMainWindow(parent), board(dimension), actualPlayer(firstPlayer)
+    : QMainWindow(parent),
+      board(dimension),
+      actualPlayer(firstPlayer),
+      newGameButton(new QPushButton("New game", this))
 {
     initWindow();
+    newGameButton->setGeometry(QRect(QPoint(dimension * cellSizePx + menuPx/4, menuPx/4), QSize(menuPx/2,menuPx/4)));
+    connect(newGameButton, SIGNAL (released()), this, SLOT (newGame()));
 }
 
 Gui::~Gui()
@@ -20,20 +25,29 @@ void Gui::initWindow()
     setMaximumHeight(boardSizePx);
     setMinimumWidth(boardSizePx + menuPx);
     setMinimumHeight(boardSizePx);
-    this->setStyleSheet("QMainWindow {background: '#632919';}");
+    this->setStyleSheet("QMainWindow {background: '#a1887f'}");
 }
 
 void Gui::drawBoard()
 {
     QPainter painter(this);
     painter.setWindow(0, 0, boardSizePx + menuPx, boardSizePx);
+    QPen pen;
+    pen.setWidth(3);
+    pen.setColor("#725b53");
     for(int x=0; x<dimension;x++)
     {
         for(int y=0; y<dimension;y++)
         {
+            painter.setPen(pen);
             painter.drawRect(x*cellSizePx, y*cellSizePx, cellSizePx, cellSizePx);
         }
     }
+    QFont serifFont("Times", 20, QFont::Bold);
+    painter.setFont(serifFont);
+    pen.setColor("#d3b8ae");
+    painter.setPen(pen);
+    painter.drawText(QPoint(dimension * cellSizePx + menuPx/4, menuPx/8), QString("Actual player: %1").arg(actualPlayer));
 }
 
 
@@ -53,14 +67,23 @@ bool Gui::checkIfExceeds(QPoint point)
 void Gui::drawBall(const int x, const int y)
 {
     QPainter painter(this);
+    QRadialGradient radialGrad(QPointF(y*cellSizePx + border/2, x*cellSizePx + border/2),cellSizePx - border);
     if(board.getCellValue(x,y) == firstPlayer)
     {
-        painter.setBrush(Qt::black);
+        radialGrad.setColorAt(1, Qt::black);
+        radialGrad.setColorAt(0.1, Qt::gray);
+        painter.setPen(Qt::black);
+        //painter.setBrush(Qt::black);
     }
     else if(board.getCellValue(x,y) == secondPlayer)
     {
-        painter.setBrush(Qt::white);
+        radialGrad.setColorAt(1, Qt::white);
+        radialGrad.setColorAt(0.1, Qt::gray);
+        painter.setPen(Qt::gray);
+        //painter.setBrush(Qt::white);
     }
+    QBrush brush(radialGrad);
+    painter.setBrush(brush);
     painter.drawEllipse(y*cellSizePx + border/2, x*cellSizePx + border/2,
                          cellSizePx - border, cellSizePx - border);
 }
@@ -157,3 +180,13 @@ void Gui::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void Gui::newGame()
+{
+    newGameButton->setText("Game started");
+    connect(newGameButton, SIGNAL (released()), this, SLOT (resetGame()));
+}
+void Gui::resetGame()
+{
+    newGameButton->setText("New game");
+    connect(newGameButton, SIGNAL (released()), this, SLOT (newGame()));
+}

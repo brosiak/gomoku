@@ -5,7 +5,7 @@
 #include <QPainter>
 #include "board.h"
 #include <iostream>
-
+#include <QPushButton>
 
 
 class Gui : public QMainWindow
@@ -34,13 +34,17 @@ private:
     static constexpr int border = 6;
     static constexpr int dimension = 15;
     static constexpr int cellSizePx = 64;
-    static constexpr int menuPx = 250;
+    static constexpr int menuPx = 300;
     static constexpr int boardSizePx = dimension * cellSizePx;
     static constexpr int firstPlayer = 1;
     static constexpr int secondPlayer = 2;
     static constexpr int emptyCell = 0;
     QPoint last_point;
     void mousePressEvent(QMouseEvent *event)override;
+    QPushButton *newGameButton;
+private slots:
+    void newGame();
+    void resetGame();
 
 
 };
