@@ -20,6 +20,7 @@ public:
     bool checkWinScore(int first, int second, int &score);
     static constexpr int WIN_SCORE = 5;
     static constexpr int START_SCORE = 1;
+    static constexpr int INDEXING = 1;
 private:
     QVector<QVector<int>> board_matrix;
     bool isWinSeq;
