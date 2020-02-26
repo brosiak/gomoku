@@ -46,16 +46,33 @@ private:
     const QString backgroundColor ="#a1887f";
     const QString borderColor = "#725b53";
     const QString itemColor = "#d3b8ae";
-    QString buttonSheet;
+    const QString buttonSheet =   "color: %1;"
+                            "background-color: %2;"
+                            "border-style: %3;"
+                            "border-width: %4;"
+                            "border-color: %5;"
+                            "border-radius: %6";
     QPoint last_point;
     void mousePressEvent(QMouseEvent *event)override;
     QPushButton *newGameButton;
     QPushButton *exitGameButton;
-    void setButtonTimeSheet();
+    QPushButton *reDoButton;
+    QPushButton *unDoButton;
+    QVector<std::pair<int,int>> visited;
+    QVector<std::pair<int,int>> popped;
+    QFont uiFont;
+    void setButtonTimeSheet(QPushButton *button);
+    void calcGamePixels();
+    void freeButtons();
+    void drawButton(QPushButton *button, const float x, const float y, const int xSize, const int ySize);
+    void drawButtons();
+    void connectButtons();
 private slots:
     void newGame();
     void resetGame();
     void exitGame();
+    void unDo();
+    void reDo();
 
 
 };

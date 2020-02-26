@@ -2,6 +2,7 @@
 #define BOARD_H
 #include <QVector>
 #include <iostream>
+#include <QPoint>
 class Board
 {
 public:
@@ -12,11 +13,11 @@ public:
     int getCellValue(std::pair<int, int> coords);
     void setCellValue(int x, int y, const int PLAYER);
     void setCellValue(std::pair<int, int> coords, const int PLAYER);
-    bool checkVertical();
-    bool checkHorizontal();
+    bool checkVertical(const int x);
+    bool checkHorizontal(const int y);
     bool checkDiagonalBR();
     bool checkDiagonalBL();
-    bool checkWin();
+    bool checkWin(std::pair<int, int> coords);
 
     bool checkWinScore(int first, int second, int &score);
     static constexpr int WIN_SCORE = 5;

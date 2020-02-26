@@ -10,42 +10,60 @@ Gui::Gui(QWidget *parent)
       actualPlayer(firstPlayer),
       newGameButton(new QPushButton("New game", this)),
       exitGameButton(new QPushButton("Exit game", this)),
-      gameStarted(false)
+      reDoButton(new QPushButton("Redo", this)),
+      unDoButton(new QPushButton("Undo", this)),
+      visited(),
+      popped(),
+      gameStarted(false),
+      uiFont("Times", 40, QFont::Bold)
 {
-    buttonSheet = "color: %1;"
-                  "background-color: %2;"
-                  "border-style: %3;"
-                  "border-width: %4;"
-                  "border-color: %5;"
-                  "border-radius: %6";
+    reDoButton->setVisible(false);
+    unDoButton->setVisible(false);
 
 }
-
 Gui::~Gui()
 {
 }
 
 void Gui::initWindow()
 {
+    calcGamePixels();
+    drawButtons();
+    connectButtons();
+    QString customSheet = "QMainWindow {background: %1}";
+    setStyleSheet(customSheet.arg(backgroundColor));
+
+}
+
+void Gui::calcGamePixels()
+{
     float dim = 1.0/dimension;
     cellSizePx = dim * height();
     menuPx = width() - (dimension)*height()*dim;
     boardSizePx = cellSizePx * dimension;
     penWidth = width()/(cellSizePx+menuPx);
-    newGameButton->setGeometry(QRect(QPoint(dimension * cellSizePx + menuPx/4, menuPx/4), QSize(menuPx/2,menuPx/4)));
-    exitGameButton->setGeometry(QRect(QPoint(dimension * cellSizePx + menuPx/4, menuPx/2), QSize(menuPx/2,menuPx/4)));
-    newGameButton->setStyleSheet(buttonSheet
-                                 .arg(Qt::black)
-                                 .arg(itemColor)
-                                 .arg("outset")
-                                 .arg("2px")
-                                 .arg(borderColor)
-                                 .arg("30px"));
+}
+
+void Gui::drawButton(QPushButton *button, const float x, const float y, const int xSize, const int ySize)
+{
+    button->setGeometry((QRect(QPoint(dimension * cellSizePx + menuPx/x, menuPx/y), QSize(menuPx/xSize, menuPx/ySize))));
+    setButtonTimeSheet(button);
+}
+
+void Gui::drawButtons()
+{
+    drawButton(newGameButton, 4, 4, 2, 4);
+    drawButton(exitGameButton, 4, 1.1, 2, 4);
+    drawButton(unDoButton, 4, 1.7, 4, 8);
+    drawButton(reDoButton, 2, 1.7, 4, 8);
+}
+
+void Gui::connectButtons()
+{
     connect(newGameButton, SIGNAL (released()), this, SLOT (newGame()));
     connect(exitGameButton, SIGNAL (released()), this, SLOT (exitGame()));
-    QString customSheet = "QMainWindow {background: %1}";
-    setStyleSheet(customSheet.arg(backgroundColor));
-
+    connect(unDoButton, SIGNAL (released()), this, SLOT (unDo()));
+    connect(reDoButton, SIGNAL (released()), this, SLOT (reDo()));
 }
 
 void Gui::drawBoard()
@@ -68,10 +86,9 @@ void Gui::drawBoard()
 void Gui::drawInterface()
 {
     QPainter painter(this);
-    QFont serifFont("Times", 20, QFont::Bold);
-    painter.setFont(serifFont);
+    painter.setFont(uiFont);
     QPen pen;
-    pen.setColor("#d3b8ae");
+    pen.setColor(itemColor);
     painter.setPen(pen);
     painter.drawText(QPoint(dimension * cellSizePx + menuPx/4, menuPx/8), QString("Actual player: %1").arg(actualPlayer));
 }
@@ -91,21 +108,22 @@ bool Gui::checkIfExceeds(QPoint point)
 void Gui::drawBall(const int x, const int y)
 {
     QPainter painter(this);
-    QRadialGradient radialGrad(QPointF(y*cellSizePx + border/2, x*cellSizePx + border/2),cellSizePx - border);
+    QRadialGradient radialGrad(QPointF(y*cellSizePx + cellSizePx/1.5, x*cellSizePx + cellSizePx/4),cellSizePx - border);
     if(board.getCellValue(x,y) == firstPlayer)
     {
-        radialGrad.setColorAt(1, Qt::black);
-        radialGrad.setColorAt(0.1, Qt::gray);
-        painter.setPen(Qt::black);
-        //painter.setBrush(Qt::black);
+        radialGrad.setColorAt(0.0, "#a7a7a7");
+        radialGrad.setColorAt(0.8, "#000000");
+        radialGrad.setColorAt(0.4, "#000000");
+        radialGrad.setColorAt(1.0, "#a7a7a7");
     }
     else if(board.getCellValue(x,y) == secondPlayer)
     {
-        radialGrad.setColorAt(1, Qt::white);
-        radialGrad.setColorAt(0.1, Qt::gray);
-        painter.setPen(Qt::gray);
-        //painter.setBrush(Qt::white);
+        radialGrad.setColorAt(0.0, "#9a9a9a");
+        radialGrad.setColorAt(0.4, "#F0F0F0");
+        radialGrad.setColorAt(0.8, "#F0F0F0");
+        radialGrad.setColorAt(1.0, "#9a9a9a");
     }
+    painter.setPen(Qt::NoPen);
     QBrush brush(radialGrad);
     painter.setBrush(brush);
     painter.drawEllipse(y*cellSizePx + border/2, x*cellSizePx + border/2,
@@ -186,10 +204,10 @@ void Gui::mousePressEvent(QMouseEvent *event)
                 if(board.getCellValue(coords) == emptyCell)
                 {
                     board.setCellValue(coords, actualPlayer);
-
+                    visited.push_back(coords);
                     QWidget::update();
 
-                    if(board.checkWin())
+                    if(board.checkWin(coords))
                     {
                         QMessageBox::information(
                             this,
@@ -213,22 +231,67 @@ void Gui::newGame()
     board.setCellValue(middlePos, middlePos, firstPlayer);
     changePlayer();
     gameStarted = true;
+    unDoButton->setVisible(true);
+    reDoButton->setVisible(true);
     QWidget::update();
     newGameButton->setText("Reset game");
     connect(newGameButton, SIGNAL (released()), this, SLOT (resetGame()));
 }
+
 void Gui::resetGame()
 {
     board.resetBoard();
     actualPlayer = firstPlayer;
     gameStarted = false;
+    unDoButton->setVisible(false);
+    reDoButton->setVisible(false);
     QWidget::update();
     newGameButton->setText("New game");
     connect(newGameButton, SIGNAL (released()), this, SLOT (newGame()));
 }
-void Gui::exitGame()
+
+void Gui::unDo()
+{
+    if(!visited.isEmpty())
+    {
+        board.setCellValue(visited.last(), emptyCell);
+        popped.push_back(visited.takeLast());
+        changePlayer();
+        QWidget::update();
+    }
+}
+void Gui::reDo()
+{
+    if(!popped.isEmpty())
+    {
+        board.setCellValue(popped.last(), actualPlayer);
+        visited.push_back(popped.takeLast());
+        changePlayer();
+        QWidget::update();
+    }
+}
+void Gui::freeButtons()
 {
     delete newGameButton;
     delete exitGameButton;
+    delete unDoButton;
+    delete reDoButton;
+}
+
+void Gui::exitGame()
+{
+    freeButtons();
     QApplication::quit();
+}
+
+void Gui::setButtonTimeSheet(QPushButton *button)
+{
+    button->setStyleSheet(buttonSheet
+                          .arg(Qt::black)
+                          .arg(itemColor)
+                          .arg("outset")
+                          .arg("2px")
+                          .arg(borderColor)
+                          .arg("30px"));
+    button->setFont(uiFont);
 }
