@@ -19,6 +19,14 @@ void Board::printBoard()
         std::cout<<std::endl;
     }
 }
+
+void Board::resetBoard()
+{
+    for(int i=0; i<board_matrix.size();i++)
+    {
+        board_matrix[i].fill(0);
+    }
+}
 int Board::getCellValue(int x, int y)
 {
     return board_matrix[x][y];

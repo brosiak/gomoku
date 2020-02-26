@@ -15,12 +15,13 @@ class Gui : public QMainWindow
 public:
     Gui(QWidget *parent = nullptr);
     ~Gui();
-
+    void initWindow();
 
 private:
     virtual void paintEvent(QPaintEvent *event)override;
-    void initWindow();
+
     void drawBoard();
+    void drawInterface();
     void drawBall(const int x, const int y);
     void drawBalls();
     int getCellValue(int x, int y);
@@ -29,22 +30,32 @@ private:
     void changePlayer();
     std::pair<int, int> getCoords(QPoint point);
     bool isClicked;
+    bool gameStarted;
     Board board;
     int actualPlayer;
     static constexpr int border = 6;
     static constexpr int dimension = 15;
-    static constexpr int cellSizePx = 64;
-    static constexpr int menuPx = 300;
-    static constexpr int boardSizePx = dimension * cellSizePx;
+    int cellSizePx;
+    int menuPx;
+    int boardSizePx;
+    int penWidth;
+    static constexpr int middlePos = (dimension - (dimension%2)) / 2;
     static constexpr int firstPlayer = 1;
     static constexpr int secondPlayer = 2;
     static constexpr int emptyCell = 0;
+    const QString backgroundColor ="#a1887f";
+    const QString borderColor = "#725b53";
+    const QString itemColor = "#d3b8ae";
+    QString buttonSheet;
     QPoint last_point;
     void mousePressEvent(QMouseEvent *event)override;
     QPushButton *newGameButton;
+    QPushButton *exitGameButton;
+    void setButtonTimeSheet();
 private slots:
     void newGame();
     void resetGame();
+    void exitGame();
 
 
 };

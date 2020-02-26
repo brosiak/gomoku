@@ -7,6 +7,7 @@ class Board
 public:
     Board(int dimension);
     void printBoard();
+    void resetBoard();
     int getCellValue(int x, int y);
     int getCellValue(std::pair<int, int> coords);
     void setCellValue(int x, int y, const int PLAYER);
