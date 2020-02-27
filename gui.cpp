@@ -214,7 +214,8 @@ void Gui::mousePressEvent(QMouseEvent *event)
                             tr("Gomoku"),
                             QString("Player %1 won!" )
                                .arg(actualPlayer) );
-                        QApplication::quit();
+                        changePlayer();
+                        //QApplication::quit();
                     }
                     else
                     {

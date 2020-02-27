@@ -65,6 +65,7 @@ bool Board::checkWinScore(int first, int second, int &score)
     }
     else if(isWinSeq==true)
     {
+            isWinSeq = false;
             return true;
     }
     else
